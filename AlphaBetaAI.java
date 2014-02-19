@@ -8,7 +8,7 @@ import chesspresso.position.Position;
 // AI that implements basic minimax algorithm + alpha beta algorithm
 public class AlphaBetaAI implements ChessAI {
 	
-	int DEPTH = 3; // basic depth that AI can search at
+	int DEPTH = 6; // basic depth that AI can search at
 	int AI_player; // stores int associated with the player AI
 	
 	HashMap<Position, Integer> transTable;
@@ -24,7 +24,7 @@ public class AlphaBetaAI implements ChessAI {
 //		ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
 //		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
 //				Integer.MAX_VALUE);
-		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
+		ChessMove bestMove = maxVal(position, DEPTH, Integer.MIN_VALUE,
 				Integer.MAX_VALUE);
 		
 //		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
@@ -49,7 +49,6 @@ public class AlphaBetaAI implements ChessAI {
 //			}
 //		}
 		
-		System.out.println("Best Move  " + bestMove.value);
 		return bestMove.actualMove;
 	}
 	
@@ -95,11 +94,11 @@ public class AlphaBetaAI implements ChessAI {
 					position.undoMove();
 					
 					// alpha-beta pruning
-//					if (bestMove.value <= alpha){
-//						return bestMove;
-//					}
-//					
-//					beta = Math.max(bestMove.value, beta);
+					if (bestMove.value <= alpha){
+						return bestMove;
+					}
+					
+					beta = Math.max(bestMove.value, beta);
 				}
 				
 				return bestMove;
@@ -171,11 +170,11 @@ public class AlphaBetaAI implements ChessAI {
 					}
 					position.undoMove();
 					
-//					if (bestMove.value >= beta){
-//						return bestMove;
-//					}
-//					
-//					alpha = Math.max(bestMove.value, alpha);
+					if (bestMove.value >= beta){
+						return bestMove;
+					}
+					
+					alpha = Math.max(bestMove.value, alpha);
 					
 				}
 				return bestMove;
