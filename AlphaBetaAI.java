@@ -8,12 +8,14 @@ import chesspresso.position.Position;
 // AI that implements basic minimax algorithm + alpha beta algorithm
 public class AlphaBetaAI implements ChessAI {
 	
-	int DEPTH = 6; // basic depth that AI can search at
+	int DEPTH = 5; // basic depth that AI can search at
 	int AI_player; // stores int associated with the player AI
+	int DOMINATION_CONSTANT = 2; // domination weight 
+	int REPEAT_CONSTANT = 1; // value to subtract if same move has been seen.
 	
-	HashMap<Position, Integer> transTable;
+	HashMap<Integer, Double> transTable;
 	public AlphaBetaAI(){
-		transTable = new HashMap<Position, Integer>();
+		transTable = new HashMap<Integer, Double>();
 	}
 	
 	public short getMove(Position position) {
@@ -21,34 +23,8 @@ public class AlphaBetaAI implements ChessAI {
 		AI_player = position.getToPlay(); // this is the AI
 		
 		// start the game-tree search
-//		ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
-//		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
-//				Integer.MAX_VALUE);
 		ChessMove bestMove = maxVal(position, DEPTH, Integer.MIN_VALUE,
 				Integer.MAX_VALUE);
-		
-//		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
-//				Integer.MAX_VALUE);
-//		for (short possMove : position.getAllMoves()){
-//			// each move begins with depth of 1
-//			try { 
-//				// try this move
-//				position.doMove(possMove);
-//				
-//				ChessMove possBestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
-//						Integer.MAX_VALUE);
-//				if (possBestMove.value > bestMove.value){
-//					// best move and values found so far
-//					bestMove.value = possBestMove.value;
-//					bestMove.actualMove = possMove;
-//				}
-//				position.undoMove();
-//				
-//			} catch (IllegalMoveException e){
-//				e.printStackTrace();
-//			}
-//		}
-		
 		return bestMove.actualMove;
 	}
 	
@@ -73,10 +49,9 @@ public class AlphaBetaAI implements ChessAI {
 				// cutoff by depth, so return a random value r
 				// where r i smaller than the value of MAX
 				// and larger than value for min
-				return new ChessMove( (short) 0, evalFunc(position));
+				return new ChessMove( (short) 0, (int)evalFunc(position));
 			} else {
 				// minimizer wants to get the lowest possible
-//				int bestValue = Integer.MAX_VALUE;
 				ChessMove bestMove = new ChessMove( (short)0, Integer.MAX_VALUE);
 				for (short possMove: position.getAllMoves()){
 					try {
@@ -107,16 +82,16 @@ public class AlphaBetaAI implements ChessAI {
 		}
 	}
 	
-	private int evalFunc(Position position){
-		int material;
+	private double evalFunc(Position position){
+		double material;
 		// Use the transtable to memoize instead 
 		// of calling getMaterial() method each
 		// time
-		if( transTable.containsKey(position) ){
-			material = transTable.get(position);
+		if( transTable.containsKey(position.hashCode()) ){
+			material = transTable.get(position.hashCode()) - REPEAT_CONSTANT;
 		} else {
-			material = position.getMaterial();
-			transTable.put(position, material);
+			material = position.getMaterial() + position.getDomination() / DOMINATION_CONSTANT;
+			transTable.put(position.hashCode(), material);
 		}
 		
 		if (position.getToPlay() == AI_player){
@@ -149,11 +124,10 @@ public class AlphaBetaAI implements ChessAI {
 				// cutoff by depth, so return a random value r
 				// where r i smaller than the value of MAX
 				// and larger than value for min
-				return new ChessMove( (short) 0, evalFunc(position));
+				return new ChessMove( (short) 0, (int)evalFunc(position));
 				
 			} else {
 				// maximizer wants to get the highest possible
-//				int bestValue = Integer.MIN_VALUE;
 				ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
 				for (short possMove: position.getAllMoves()){
 					try {
