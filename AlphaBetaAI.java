@@ -21,30 +21,33 @@ public class AlphaBetaAI implements ChessAI {
 		AI_player = position.getToPlay(); // this is the AI
 		
 		// start the game-tree search
-		ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
+//		ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
+		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
+				Integer.MAX_VALUE);
 		
 //		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
 //				Integer.MAX_VALUE);
-		for (short possMove : position.getAllMoves()){
-			// each move begins with depth of 1
-			try { 
-				// try this move
-				position.doMove(possMove);
-				
-				ChessMove possBestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
-						Integer.MAX_VALUE);
-				if (possBestMove.value > bestMove.value){
-					// best move and values found so far
-					bestMove.actualMove = possMove;
-					bestMove.value = possBestMove.value;
-				}
-				position.undoMove();
-				
-			} catch (IllegalMoveException e){
-				e.printStackTrace();
-			}
-		}
+//		for (short possMove : position.getAllMoves()){
+//			// each move begins with depth of 1
+//			try { 
+//				// try this move
+//				position.doMove(possMove);
+//				
+//				ChessMove possBestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
+//						Integer.MAX_VALUE);
+//				if (possBestMove.value > bestMove.value){
+//					// best move and values found so far
+//					bestMove.value = possBestMove.value;
+//					bestMove.actualMove = possMove;
+//				}
+//				position.undoMove();
+//				
+//			} catch (IllegalMoveException e){
+//				e.printStackTrace();
+//			}
+//		}
 		
+		System.out.println("Best Move  " + bestMove.actualMove);
 		return bestMove.actualMove;
 	}
 	
@@ -73,11 +76,13 @@ public class AlphaBetaAI implements ChessAI {
 			} else {
 				// minimizer wants to get the lowest possible
 //				int bestValue = Integer.MAX_VALUE;
-				ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
+				ChessMove bestMove = new ChessMove( (short)0, Integer.MAX_VALUE);
 				for (short possMove: position.getAllMoves()){
 					try {
 						position.doMove(possMove);
 						ChessMove possBestMove = maxVal(position, depth-1, alpha, beta);
+						possBestMove.actualMove = possMove;
+						
 						if (possBestMove.value < bestMove.value){
 							bestMove.actualMove = possMove;
 							bestMove.value = possBestMove.value;
@@ -153,6 +158,8 @@ public class AlphaBetaAI implements ChessAI {
 					try {
 						position.doMove(possMove);
 						ChessMove possBestMove = minVal(position, depth - 1, alpha, beta);
+						possBestMove.actualMove = possMove;
+						
 						if (possBestMove.value > bestMove.value ){
 							bestMove.actualMove = possMove;
 							bestMove.value = possBestMove.value;
