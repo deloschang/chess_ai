@@ -22,6 +22,8 @@ public class AlphaBetaAI implements ChessAI {
 		
 		// start the game-tree search
 //		ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
+//		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
+//				Integer.MAX_VALUE);
 		ChessMove bestMove = minVal(position, DEPTH, Integer.MIN_VALUE,
 				Integer.MAX_VALUE);
 		
@@ -47,7 +49,7 @@ public class AlphaBetaAI implements ChessAI {
 //			}
 //		}
 		
-		System.out.println("Best Move  " + bestMove.actualMove);
+		System.out.println("Best Move  " + bestMove.value);
 		return bestMove.actualMove;
 	}
 	
@@ -93,11 +95,11 @@ public class AlphaBetaAI implements ChessAI {
 					position.undoMove();
 					
 					// alpha-beta pruning
-					if (bestMove.value <= alpha){
-						return bestMove;
-					}
-					
-					beta = Math.max(bestMove.value, beta);
+//					if (bestMove.value <= alpha){
+//						return bestMove;
+//					}
+//					
+//					beta = Math.max(bestMove.value, beta);
 				}
 				
 				return bestMove;
@@ -169,11 +171,11 @@ public class AlphaBetaAI implements ChessAI {
 					}
 					position.undoMove();
 					
-					if (bestMove.value >= beta){
-						return bestMove;
-					}
-					
-					alpha = Math.max(bestMove.value, alpha);
+//					if (bestMove.value >= beta){
+//						return bestMove;
+//					}
+//					
+//					alpha = Math.max(bestMove.value, alpha);
 					
 				}
 				return bestMove;
