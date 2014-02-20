@@ -11,16 +11,16 @@ public class ChessMove {
 	}
 	
 	// set the value of the chess
-	private void setValue(int value){
+	public void setValue(int value){
 		this.value = value;
 	}
 	
-	private double getValue(){
+	public double getValue(){
 		return value;
 	}
 	
 	// set the move of the chess
-	private void setMove(short move){
+	public void setMove(short move){
 		this.actualMove = move;
 	}
 	
