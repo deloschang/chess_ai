@@ -37,6 +37,7 @@ public class MiniMaxAI implements ChessAI {
 		// start the game-tree search
 		ChessMove bestMove = new ChessMove( (short)0, Integer.MIN_VALUE);
 		
+		// iterative deepening
 		for (short possMove : position.getAllMoves()){
 			// each move begins with depth of 1
 			try { 

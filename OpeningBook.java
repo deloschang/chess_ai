@@ -11,6 +11,10 @@ import chesspresso.pgn.PGNSyntaxError;
 public class OpeningBook {
 	Game[] openingBook = new Game[121];
 
+	public int size(){
+		return openingBook.length;
+	}
+	
 	public OpeningBook(){
 		URL url = null;
 		try {

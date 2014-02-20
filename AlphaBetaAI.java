@@ -1,7 +1,9 @@
 package chai;
 
 import java.util.HashMap;
+import java.util.Random;
 
+import chesspresso.game.Game;
 import chesspresso.move.IllegalMoveException;
 import chesspresso.position.Position;
 
@@ -10,30 +12,49 @@ public class AlphaBetaAI implements ChessAI {
 	
 	int DEPTH; // basic depth that AI can search at
 	int AI_player; // stores int associated with the player AI
-	int DOMINATION_CONSTANT = 2; // domination weight 
+	int DOMINATION_CONSTANT = 5; // domination weight 
 	int REPEAT_CONSTANT = 1; // value to subtract if same move has been seen.
+	int moveCounter = 0;
+	OpeningBook loadBook;
 	
 	HashMap<Integer, Double> transTable;
 	public AlphaBetaAI(int depth){
 		transTable = new HashMap<Integer, Double>();
 		DEPTH = depth;
+		loadBook = new OpeningBook();
 	}
 	
 	public short getMove(Position position) {
+		moveCounter += 1;
+		
+		
 		// called once per move
 		AI_player = position.getToPlay(); // this is the AI
 		
 		// start the game-tree search
-		ChessMove bestMove = new ChessMove((short) 0, Integer.MIN_VALUE);
-		for (int i=0; i < DEPTH; i++){
-			ChessMove possBestMove = maxVal(position, DEPTH, Integer.MIN_VALUE,
+//		ChessMove bestMove = new ChessMove((short) 0, Integer.MIN_VALUE);
+//		for (int i=0; i <= DEPTH; i++){
+//			ChessMove possBestMove = maxVal(position, i, Integer.MIN_VALUE,
+//					Integer.MAX_VALUE);
+//			if (possBestMove.value > bestMove.value){
+//				bestMove.value = possBestMove.value;
+//				bestMove.actualMove = possBestMove.actualMove;
+//			}
+//		}
+		
+		if (moveCounter < 1){
+			int index = (int)(Math.random() * loadBook.size());
+			Game g = loadBook.openingBook[index];
+			g.gotoStart();
+			return g.getNextMove().getShortMoveDesc();
+			
+			
+		} else {
+			ChessMove bestMove = maxVal(position, DEPTH, Integer.MIN_VALUE,
 					Integer.MAX_VALUE);
-			if (possBestMove.value > bestMove.value){
-				bestMove.value = possBestMove.value;
-				bestMove.actualMove = possBestMove.actualMove;
-			}
+			
+			return bestMove.actualMove;
 		}
-		return bestMove.actualMove;
 	}
 	
 	private ChessMove minVal(Position position, int depth, int alpha, int beta){
@@ -81,7 +102,7 @@ public class AlphaBetaAI implements ChessAI {
 						return bestMove;
 					}
 					
-					beta = Math.max(bestMove.value, beta);
+					beta = Math.min(bestMove.value, beta);
 				}
 				
 				return bestMove;
@@ -173,24 +194,18 @@ public class AlphaBetaAI implements ChessAI {
 	// returns -1 if loss;
 	// returns null if not terminal state
 	private int terminalTest(Position position){
-		// isTerminal accounts for possibility of draw
+		// Position is not checkmate but >50 moves (in isTerminal)
+		if (position.isStaleMate()){
+			return 0;
+		}
 		
 		// if current player is in check and can't move, it's a checkmate
 		if (AI_player == position.getToPlay()){
-			// Position is not checkmate but >50 moves (in isTerminal)
-			if (position.isStaleMate()){
-				return 0;
-			}
-			
 			// If the position is checkmate, then AI has lost
 			if (position.isTerminal() && position.isMate()){
 				return -1; //loss
 			}
 		} else {
-			// Position is not checkmate but >50 moves (in isTerminal)
-			if (position.isStaleMate()){
-				return 0;
-			}
 			
 			// If the position is checkmate, then AI has won (not AI's turn)
 			if (position.isTerminal() && position.isMate()){
