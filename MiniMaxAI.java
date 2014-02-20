@@ -8,14 +8,17 @@ import chesspresso.position.Position;
 public class MiniMaxAI implements ChessAI {
 	
 	int DEPTH; // basic depth that AI can search at
+	int AI_PLAYER;
 	
 	public MiniMaxAI(int depth) {
 		DEPTH = depth;
 	}
 	
 	public short getMove(Position position) {
+		AI_PLAYER = position.getToPlay();
+		
 		// start the game-tree search
-		ChessMove bestMove = maxVal(position, 1);
+		ChessMove bestMove = maxVal(position, 6);
 		
 		for(int i = 1; i < DEPTH; i++){
 			ChessMove possBestMove = maxVal(position, i);
@@ -28,7 +31,7 @@ public class MiniMaxAI implements ChessAI {
 	}
 	
 	private ChessMove maxVal(Position position, int depth){
-		if(position.isTerminal() || depth == 0){
+		if(position.isMate() || depth == 0){
 			return new ChessMove((short) 0, terminalTest(position));
 		}
 		
@@ -52,7 +55,7 @@ public class MiniMaxAI implements ChessAI {
 	}
 	
 	private ChessMove minVal(Position position, int depth){
-		if(position.isTerminal() || depth == 0){
+		if(position.isMate() || depth == 0){
 			return new ChessMove((short) 0, terminalTest(position));
 		}
 		
@@ -77,7 +80,7 @@ public class MiniMaxAI implements ChessAI {
 	}
 	
 	private int evalFunc(Position position){
-		if (position.getToPlay() == Chess.WHITE){
+		if (position.getToPlay() == AI_PLAYER){
 			return position.getMaterial();
 		} else {
 			return -1 * position.getMaterial();
@@ -99,7 +102,7 @@ public class MiniMaxAI implements ChessAI {
 		
 		// if current player is in check and can't move, it's a checkmate
 		if (position.isMate()){
-			if (Chess.WHITE == position.getToPlay()){
+			if (AI_PLAYER == position.getToPlay()){
 				
 				// If the position is checkmate, then AI has lost
 					return Integer.MIN_VALUE; //loss
