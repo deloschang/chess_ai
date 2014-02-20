@@ -8,14 +8,15 @@ import chesspresso.position.Position;
 // AI that implements basic minimax algorithm + alpha beta algorithm
 public class AlphaBetaAI implements ChessAI {
 	
-	int DEPTH = 5; // basic depth that AI can search at
+	int DEPTH; // basic depth that AI can search at
 	int AI_player; // stores int associated with the player AI
 	int DOMINATION_CONSTANT = 2; // domination weight 
 	int REPEAT_CONSTANT = 1; // value to subtract if same move has been seen.
 	
 	HashMap<Integer, Double> transTable;
-	public AlphaBetaAI(){
+	public AlphaBetaAI(int depth){
 		transTable = new HashMap<Integer, Double>();
+		DEPTH = depth;
 	}
 	
 	public short getMove(Position position) {
@@ -23,8 +24,15 @@ public class AlphaBetaAI implements ChessAI {
 		AI_player = position.getToPlay(); // this is the AI
 		
 		// start the game-tree search
-		ChessMove bestMove = maxVal(position, DEPTH, Integer.MIN_VALUE,
-				Integer.MAX_VALUE);
+		ChessMove bestMove = new ChessMove((short) 0, Integer.MIN_VALUE);
+		for (int i=0; i < DEPTH; i++){
+			ChessMove possBestMove = maxVal(position, DEPTH, Integer.MIN_VALUE,
+					Integer.MAX_VALUE);
+			if (possBestMove.value > bestMove.value){
+				bestMove.value = possBestMove.value;
+				bestMove.actualMove = possBestMove.actualMove;
+			}
+		}
 		return bestMove.actualMove;
 	}
 	
